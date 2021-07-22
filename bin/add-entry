@@ -1,0 +1,62 @@
+#!/usr/bin/env ruby
+
+def prompt(message)
+  puts message
+  gets.chomp
+end
+
+def prompt_tags()
+  tags = []
+
+  while true
+    tag = prompt "Add tag (empty to skip):"
+    if tag.empty?
+      break
+    end
+    tags.push(tag)
+  end
+
+  tags
+end
+
+def format_tags(tags)
+  formatted_tags = ""
+
+  if tags.empty?
+    formatted_tags = "tags: []"
+  else
+    formatted_tags = "tags:\n"
+    tags.each { |tag| formatted_tags = formatted_tags.concat "  - #{tag}\n"  }
+  end
+
+  formatted_tags
+end
+
+
+name = prompt "Name:"
+url = prompt "Url:"
+lang = prompt "Lang:"
+tags = prompt_tags
+
+formatted_tags = format_tags tags
+
+yaml_content = <<-YAML
+name: #{name}
+url: #{url}
+lang: #{lang}
+#{formatted_tags}
+YAML
+
+
+filepath = "db/" + name.downcase.gsub(" ", "-") + ".yaml"
+
+puts filepath
+puts
+puts yaml_content
+puts
+
+correct = prompt "Is this correct? [Y/n]"
+if ! correct.start_with? "n"
+  File.write(filepath, yaml_content)
+end
+
